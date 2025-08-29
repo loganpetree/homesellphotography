@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "postinstall": "prisma generate",
     "migrate": "ts-node -P tsconfig.scripts.json src/lib/hdphotohub-migration.ts",
     "migrate:test": "ts-node -P tsconfig.scripts.json src/scripts/test-migration.ts",
     "migrate:csv-test": "ts-node -P tsconfig.scripts.json src/scripts/migrate-csv-test.ts",
