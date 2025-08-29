@@ -29,7 +29,7 @@ export default function SitesPage() {
       const data = await response.json();
       
       // Get the first non-hidden image if available
-      const previewImage = data.media?.find((img: any) => !img.hidden)?.url;
+      const previewImage = data.media?.find((img: { hidden: boolean; url: string }) => !img.hidden)?.url;
       
       return {
         sid: siteId,

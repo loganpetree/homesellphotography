@@ -2,18 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase-server';
 import { doc, updateDoc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import fetch from 'node-fetch';
-import * as admin from 'firebase-admin';
+import admin, { adminDb } from '@/lib/firebase-admin';
 
-// Initialize Firebase Admin if not already initialized
-if (!admin.apps.length) {
-  const serviceAccount = require('../../../../../service-account.json');
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    storageBucket: 'homesell-photography-562f2.firebasestorage.app'
-  });
-}
-
-const adminDb = admin.firestore();
 const storage = admin.storage();
 const bucket = storage.bucket();
 

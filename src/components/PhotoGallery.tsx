@@ -27,11 +27,11 @@ export default function PhotoGallery({ siteId, className = '', fetchFeatured = f
           const featuredSites = await featuredResponse.json();
           
           // Only fetch active sites
-          const activeSites = featuredSites.filter((site: any) => site.isActive);
+          const activeSites = featuredSites.filter((site: { isActive: boolean }) => site.isActive);
           
           // Fetch images for each site
           const allImages = await Promise.all(
-            activeSites.map(async (site: any) => {
+            activeSites.map(async (site: { siteId: string }) => {
               const response = await fetch(
                 `${API_BASE_URL}/site?sid=${site.siteId}`,
                 {
