@@ -31,6 +31,11 @@ const nextConfig: NextConfig = {
         hostname: 'firebasestorage.googleapis.com',
         pathname: '/v0/b/homesell-photography-562f2.firebasestorage.app/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        pathname: '/homesell-photography-562f2.firebasestorage.app/**',
+      },
     ],
   },
 };

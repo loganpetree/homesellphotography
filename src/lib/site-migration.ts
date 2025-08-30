@@ -2,18 +2,23 @@ import { parse } from 'csv-parse';
 import { createReadStream } from 'fs';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApp } from 'firebase/app';
 import { HDPhotoHubSite, FirebaseSite, FirebaseMedia } from '@/types/site-migration';
+import { processImage, uploadProcessedImages } from './image-processing';
 
 const API_KEY = '3EEF3DD2A8E14AD8B1356C7F1914B20C';
 const API_BASE_URL = 'https://homesellphotography.hd.pics/api/v1';
 
-// Initialize Firebase (you'll need to provide your config)
-const firebaseConfig = {
-  // Add your Firebase config here
-};
+// Import and use the same Firebase config as the rest of the app
+import { firebaseConfig } from './firebase-config';
 
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase or get existing app
+let app;
+try {
+  app = initializeApp(firebaseConfig);
+} catch (error) {
+  app = getApp(); // Get the already initialized app
+}
 const storage = getStorage(app);
 const db = getFirestore(app);
 
@@ -48,14 +53,18 @@ async function downloadAndUploadImage(
     // Download image from HDPhotoHub
     const response = await fetch(media.url);
     if (!response.ok) throw new Error(`Failed to download image: ${response.statusText}`);
-    const buffer = await response.arrayBuffer();
+    const buffer = Buffer.from(await response.arrayBuffer());
 
-    // Upload to Firebase Storage
-    const storageRef = ref(storage, `sites/${siteId}/media/${media.order.toString().padStart(3, '0')}_${media.mid}.jpg`);
-    await uploadBytes(storageRef, buffer);
+    // Process image into different sizes
+    const processedImages = await processImage(buffer);
     
-    // Get the download URL
-    const storageUrl = await getDownloadURL(storageRef);
+    // Upload all sizes to Firebase Storage
+    const urls = await uploadProcessedImages(
+      siteId,
+      media.mid.toString(),
+      media.order,
+      processedImages
+    );
 
     // Return the Firebase media object
     return {
@@ -67,13 +76,40 @@ async function downloadAndUploadImage(
       extension: media.extension,
       size: media.size,
       originalUrl: media.url,
-      storageUrl,
+      storageUrl: urls.originalUrl,
+      thumbnailUrl: urls.thumbnailUrl,
+      mediumUrl: urls.mediumUrl,
+      largeUrl: urls.largeUrl,
       order: media.order,
       branded: media.branded.split(','),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
-  } catch (error) {
+  } catch (error: any) {
+    // Check for billing-related errors
+    if (error?.code === 403 && error?.message?.includes('billing account')) {
+      console.error(`Firebase billing error: ${error.message}`);
+      console.error('Please check that billing is enabled and properly configured in the Firebase Console');
+      
+      // Return a media object with the error but don't throw
+      return {
+        mediaId: media.mid.toString(),
+        type: media.type,
+        name: media.name,
+        hidden: media.hidden,
+        highlight: media.highlight,
+        extension: media.extension,
+        size: media.size,
+        originalUrl: media.url,
+        url: media.url, // Use original URL as fallback
+        order: media.order,
+        branded: media.branded.split(','),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        processingError: JSON.stringify(error, null, 2)
+      };
+    }
+    
     console.error(`Error processing image ${media.url}:`, error);
     throw error;
   }

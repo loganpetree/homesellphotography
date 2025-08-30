@@ -43,3 +43,4 @@ export interface WakeUpProgress {
   migratedSites: number;
   lastUpdated: string;
 }
+

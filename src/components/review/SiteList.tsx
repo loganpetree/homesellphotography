@@ -5,6 +5,7 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase-client';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CheckCircle, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ToggleSwitch } from '@/components/ui/toggle-switch';
 
 interface Site {
   siteId: string;
@@ -18,6 +19,7 @@ interface Site {
   };
   media: any[];
   reviewed?: boolean;
+  created?: string;
 }
 
 const SITES_PER_PAGE = 10;
@@ -28,6 +30,7 @@ export function SiteList() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [hideReviewed, setHideReviewed] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedSiteId = searchParams.get('siteId');
@@ -40,19 +43,52 @@ export function SiteList() {
         
         // Create a query against the sites collection
         const sitesRef = collection(db, 'sites');
-        const q = query(sitesRef, orderBy('created', 'desc'));
-        
+        const q = query(sitesRef);
+
         // Get the documents
         const querySnapshot = await getDocs(q);
         
         // Map the documents to our Site interface
-        const sitesData = querySnapshot.docs.map(doc => ({
-          ...doc.data(),
-          siteId: doc.id
-        } as Site));
+        const sitesData = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            ...data,
+            siteId: doc.id,
+            reviewed: data.reviewed || false
+          } as Site;
+        });
+
+        // Sort sites by created date (newest first), with fallback for missing created field
+        sitesData.sort((a, b) => {
+          const aDate = a.created ? new Date(a.created).getTime() : 0;
+          const bDate = b.created ? new Date(b.created).getTime() : 0;
+          return bDate - aDate; // Descending order (newest first)
+        });
         
-        setSites(sitesData);
         console.log('Fetched sites:', sitesData.length);
+        console.log('Sample site data:', sitesData.slice(0, 3).map(s => ({
+          id: s.siteId,
+          reviewed: s.reviewed,
+          address: s.address?.street,
+          created: s.created
+        })));
+        console.log('Created field values:', sitesData.slice(0, 5).map(s => s.created));
+
+        // Check for sites without created field
+        const sitesWithoutCreated = sitesData.filter(s => !s.created);
+        if (sitesWithoutCreated.length > 0) {
+          console.warn('Sites without created field:', sitesWithoutCreated.map(s => s.siteId));
+        }
+
+        // Log the ordering to verify it's working
+        const firstFiveSites = sitesData.slice(0, 5).map(s => ({
+          id: s.siteId,
+          created: s.created,
+          createdDate: s.created ? new Date(s.created).toLocaleString() : 'N/A'
+        }));
+        console.log('First 5 sites after JavaScript sorting (should be newest):', firstFiveSites);
+
+        setSites(sitesData);
       } catch (err) {
         console.error('Error fetching sites:', err);
         // Log more details about the error
@@ -70,17 +106,30 @@ export function SiteList() {
     fetchSites();
   }, []);
 
-  // Filter sites based on search term
+  // Filter sites based on search term and reviewed status
   const filteredSites = useMemo(() => {
-    if (!searchTerm.trim()) return sites;
+    let filtered = sites;
     
-    const term = searchTerm.toLowerCase();
-    return sites.filter(site => 
-      site.siteId.toLowerCase().includes(term) ||
-      site.address?.street?.toLowerCase().includes(term) ||
-      `${site.address?.street} ${site.address?.city} ${site.address?.state}`.toLowerCase().includes(term)
-    );
-  }, [sites, searchTerm]);
+    // Filter by search term
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(site => 
+        site.siteId.toLowerCase().includes(term) ||
+        site.address?.street?.toLowerCase().includes(term) ||
+        `${site.address?.street} ${site.address?.city} ${site.address?.state}`.toLowerCase().includes(term)
+      );
+    }
+    
+    // Filter out reviewed sites if hideReviewed is true
+    if (hideReviewed) {
+      console.log('Filtering reviewed sites. Before:', filtered.length);
+      filtered = filtered.filter(site => !site.reviewed);
+      console.log('After filtering reviewed:', filtered.length);
+      console.log('Sample site reviewed status:', filtered.slice(0, 3).map(s => ({ id: s.siteId, reviewed: s.reviewed })));
+    }
+    
+    return filtered;
+  }, [sites, searchTerm, hideReviewed]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredSites.length / SITES_PER_PAGE);
@@ -88,10 +137,10 @@ export function SiteList() {
   const endIndex = startIndex + SITES_PER_PAGE;
   const paginatedSites = filteredSites.slice(startIndex, endIndex);
 
-  // Reset to first page when search changes
+  // Reset to first page when search or filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, hideReviewed]);
 
   const selectSite = (siteId: string) => {
     router.push(`/review?siteId=${siteId}`);
@@ -143,8 +192,8 @@ export function SiteList() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Search Bar */}
-      <div className="p-4 border-b">
+      {/* Search Bar and Filters */}
+      <div className="p-4 border-b space-y-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
@@ -155,11 +204,16 @@ export function SiteList() {
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
-        {searchTerm && (
-          <div className="mt-2 text-sm text-gray-600">
-            Found {filteredSites.length} sites
+        <div className="flex items-center justify-between">
+          <ToggleSwitch
+            checked={hideReviewed}
+            onChange={setHideReviewed}
+            label="Hide reviewed sites"
+          />
+          <div className="text-sm text-gray-600">
+            {filteredSites.length} site{filteredSites.length !== 1 ? 's' : ''} found
           </div>
-        )}
+        </div>
       </div>
 
       {/* Sites List */}

@@ -29,10 +29,7 @@ export async function GET() {
     });
     
     const excludedCount = allSites.length - filteredSites.length;
-    
-    // Sort by site ID for consistent ordering
-    filteredSites.sort((a, b) => a.siteId.localeCompare(b.siteId));
-    
+
     return NextResponse.json({ 
       sites: filteredSites,
       excluded: excludedCount,

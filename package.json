@@ -11,6 +11,8 @@
     "migrate": "ts-node -P tsconfig.scripts.json src/lib/hdphotohub-migration.ts",
     "migrate:test": "ts-node -P tsconfig.scripts.json src/scripts/test-migration.ts",
     "migrate:csv-test": "ts-node -P tsconfig.scripts.json src/scripts/migrate-csv-test.ts",
+    "migrate:images": "ts-node -P tsconfig.scripts.json src/scripts/migrate-image-sizes.ts",
+    "wake-and-migrate": "ts-node -P tsconfig.scripts.json src/scripts/wake-and-migrate.ts",
     "verify": "ts-node -P tsconfig.scripts.json src/lib/migration-verification.ts"
   },
   "dependencies": {
@@ -34,6 +36,9 @@
     "prisma": "^6.13.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "sharp": "^0.34.3",
+    "puppeteer": "^23.1.0",
+    "dotenv": "^16.4.5",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {

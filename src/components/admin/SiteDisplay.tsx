@@ -32,7 +32,7 @@ export function SiteDisplay({ site }: SiteDisplayProps) {
           {site.media.map((media) => (
             <div key={media.mediaId} className="space-y-2">
               <img
-                src={media.storageUrl}
+                src={media.mediumUrl || media.largeUrl || media.storageUrl} // Use medium size for grid view
                 alt={media.name}
                 className="w-full h-48 object-cover rounded"
               />

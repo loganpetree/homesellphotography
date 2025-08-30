@@ -130,7 +130,7 @@ export default function PhotoGallery({ siteId, className = '', fetchFeatured = f
       {images.map((image) => (
         <div key={image.mid} className="relative aspect-[4/3] group overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
           <Image
-            src={image.url}
+            src={image.mediumUrl || image.largeUrl || image.url} // Use medium size for grid, fallback to large or original
             alt={image.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"

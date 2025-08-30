@@ -51,7 +51,7 @@ export default function Home() {
               <Link href="/services" className="text-gray-600 hover:text-gray-900 transition-colors">Services</Link>
               <Link href="/pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</Link>
               <Button 
-                className="bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded-xl"
+                className="bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded"
                 onClick={() => window.open('https://homesellphotography.hd.pics/order', '_blank')}
               >
                 Book a Shoot
@@ -91,12 +91,12 @@ export default function Home() {
               </p>
               <div className="flex gap-4">
                 <Button 
-                  className="bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded-xl px-8"
+                  className="bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded px-8"
                   onClick={() => window.open('https://homesellphotography.hd.pics/order', '_blank')}
                 >
                   Book Now
                 </Button>
-                <Button variant="outline" className="rounded-xl px-8 border-gray-200 text-gray-700 hover:bg-gray-50">
+                <Button variant="outline" className="rounded px-8 border-gray-200 text-gray-700 hover:bg-gray-50">
                   View Portfolio
                 </Button>
               </div>
@@ -198,9 +198,11 @@ export default function Home() {
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Featured <span className="text-[#22C55E]">Work</span></h2>
               <p className="text-gray-600">Showcasing our finest property photography</p>
             </div>
-            <Button variant="ghost" className="hidden md:flex items-center gap-2 text-gray-700 hover:bg-gray-100">
-              View All Work <ArrowRight className="h-4 w-4" />
-            </Button>
+            <Link href="/featured-work">
+              <Button variant="ghost" className="hidden md:flex items-center gap-2 text-gray-700 hover:bg-gray-100">
+                View All Work <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
           
           <FavoriteGallery userId="showcase" className="mt-4" />
@@ -364,7 +366,7 @@ export default function Home() {
                              focus:border-[#10B981] transition-colors placeholder:text-gray-400"
                   />
                 </div>
-                <Button className="w-full bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded-xl py-6">
+                <Button className="w-full bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded py-6">
                   Send Message
                 </Button>
               </form>
@@ -373,8 +375,18 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Mobile Floating Book Now Button */}
+      <div className="md:hidden fixed bottom-6 left-4 right-4 z-50">
+        <Button 
+          className="w-full bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded-xl py-6 shadow-lg"
+          onClick={() => window.open('https://homesellphotography.hd.pics/order', '_blank')}
+        >
+          Book Now
+        </Button>
+      </div>
+
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 py-12 px-4">
+      <footer className="bg-white border-t border-gray-100 py-12 px-4 md:pb-12 pb-24">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div>

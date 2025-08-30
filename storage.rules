@@ -4,7 +4,8 @@ service firebase.storage {
   match /b/{bucket}/o {
     match /sites/{siteId}/media/{allPaths=**} {
       allow read: if true;  // Allow public read access to all site media
-      allow write: if false;  // No write access
+      allow write: if true;  // Allow write access for migration
     }
   }
 }
+

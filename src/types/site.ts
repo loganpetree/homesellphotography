@@ -8,6 +8,9 @@ export interface FirebaseMedia {
   size: number;
   originalUrl: string;
   storageUrl: string;
+  smallUrl?: string;      // Small preview (400px width)
+  mediumUrl?: string;     // Medium size (800px width)
+  largeUrl?: string;      // Large size (1600px width)
   order: number;
   branded: string[];
   createdAt: string;

@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { getMediaUrl } from '@/lib/storage-utils';
 import { FavoriteToggle } from '@/components/ui/favorite-toggle';
 import { ReviewToggle } from '@/components/ui/review-toggle';
+import { ExternalLink, RefreshCw } from 'lucide-react';
 
 interface MediaItem {
   mediaId: string;
@@ -46,6 +47,7 @@ export function SiteDetails() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mediaUrls, setMediaUrls] = useState<Record<string, string>>({});
+  const [migrating, setMigrating] = useState(false);
   const searchParams = useSearchParams();
   const siteId = searchParams.get('siteId');
 
@@ -110,6 +112,43 @@ export function SiteDetails() {
     fetchSiteDetails();
   }, [siteId]);
 
+  const handleNavigateToHDPhotoHub = () => {
+    if (!siteId) return;
+    // Construct HDPhotoHub URL - using the pattern found in the codebase
+    const hdPhotoHubUrl = `https://homesellphotography.hd.pics/Sites/media.asp?nSiteID=${siteId}`;
+    window.open(hdPhotoHubUrl, '_blank');
+  };
+
+  const handleRunMigration = async () => {
+    if (!siteId) return;
+
+    setMigrating(true);
+    try {
+      const response = await fetch('/api/wake-up/migrate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ siteId }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(`Migration completed successfully! ${data.message}`);
+        // Optionally refresh the site details
+        window.location.reload();
+      } else {
+        alert(`Migration failed: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Migration error:', error);
+      alert('Failed to run migration. Check console for details.');
+    } finally {
+      setMigrating(false);
+    }
+  };
+
   if (!siteId) {
     return (
       <div className="p-8 text-center text-gray-500">
@@ -164,7 +203,7 @@ export function SiteDetails() {
           {site.user?.phone && <p>{site.user.phone}</p>}
         </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <FavoriteToggle
             userId="showcase"
             siteId={site.siteId}
@@ -175,15 +214,38 @@ export function SiteDetails() {
             reviewed={site.reviewed || false}
             className="mt-2"
           />
+          <button
+            onClick={handleNavigateToHDPhotoHub}
+            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+            title="Open in HDPhotoHub"
+          >
+            <ExternalLink className="w-4 h-4" />
+            HDPhotoHub
+          </button>
+          <button
+            onClick={handleRunMigration}
+            disabled={migrating}
+            className="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            title="Run migration again"
+          >
+            <RefreshCw className={`w-4 h-4 ${migrating ? 'animate-spin' : ''}`} />
+            {migrating ? 'Migrating...' : 'Migrate'}
+          </button>
         </div>
       </div>
 
       <div className="mt-8">
         <h3 className="text-xl font-semibold mb-4">
-          Media Files ({site.media?.length || 0})
+          Media Files ({site.media?.filter(media => !media.type?.toLowerCase().includes('video') && 
+                    !media.originalUrl?.includes('videodelivery.net') &&
+                    !media.url?.includes('videodelivery.net')).length || 0})
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {site.media?.sort((a, b) => a.order - b.order).map((media) => {
+          {site.media?.sort((a, b) => a.order - b.order)
+            .filter(media => !media.type?.toLowerCase().includes('video') && 
+                           !media.originalUrl?.includes('videodelivery.net') &&
+                           !media.url?.includes('videodelivery.net'))
+            .map((media) => {
             console.log('Media item details:', {
               mediaId: media.mediaId,
               name: media.name,
@@ -197,7 +259,7 @@ export function SiteDetails() {
                   {mediaUrls[media.mediaId] ? (
                     <>
                       <Image
-                        src={mediaUrls[media.mediaId]}
+                        src={media.largeUrl || media.mediumUrl || mediaUrls[media.mediaId]} // Use large size for detailed view
                         alt={media.name}
                         fill
                         className="object-cover"

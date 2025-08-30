@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase-server';
 import { doc, updateDoc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import fetch from 'node-fetch';
-import admin, { adminDb } from '@/lib/firebase-admin';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { firebaseStorage } from '@/lib/firebase-storage';
+import { processImage, uploadProcessedImages } from '@/lib/image-processing';
 
-const storage = admin.storage();
-const bucket = storage.bucket();
+const storage = firebaseStorage;
 
 const API_KEY = '26EF5EABF6A24412AF4C7974475C2D34';
 const API_BASE_URL = 'https://homesellphotography.hd.pics/api/v1';
@@ -64,8 +65,11 @@ interface ProcessedMedia {
   highlight: boolean;
   extension: string;
   size: number;
-  originalUrl?: string;
-  url: string;
+  originalUrl: string;
+  storageUrl: string;
+  smallUrl?: string;
+  mediumUrl?: string;
+  largeUrl?: string;
   order: number;
   branded: string;
   processingError?: string;
@@ -80,27 +84,43 @@ async function downloadImage(url: string): Promise<Buffer> {
 }
 
 async function uploadToStorage(buffer: Buffer, path: string, contentType: string = 'image/jpeg'): Promise<string> {
-  const file = bucket.file(path);
-  await file.save(buffer, {
-    metadata: {
+  try {
+    const storageRef = ref(storage, path);
+    await uploadBytes(storageRef, buffer, {
       contentType
+    });
+    return getDownloadURL(storageRef);
+  } catch (error: any) {
+    if (error?.code === 'storage/unauthorized') {
+      console.error(`Storage authorization error: ${error.message}`);
+      throw new Error('Firebase Storage billing is not properly configured. Please enable billing in the Firebase Console.');
     }
-  });
-  return file.publicUrl();
+    throw error;
+  }
 }
 
 async function processMedia(siteId: string, media: HDPhotoHubMedia): Promise<ProcessedMedia> {
   try {
     console.log(`Processing media ${media.mid} for site ${siteId}...`);
-    
-    // Create a clean filename
-    const filename = `${media.order.toString().padStart(3, '0')}_${media.name.replace(/[^a-zA-Z0-9]/g, '')}.${media.extension}`;
-    const storagePath = `sites/${siteId}/media/${filename}`;
-    
-    // Download and upload
+
+    // Download image
     const imageBuffer = await downloadImage(media.url);
-    const storageUrl = await uploadToStorage(imageBuffer, storagePath);
-    
+
+    // Process image into different sizes
+    const processedImages = await processImage(imageBuffer);
+
+    // Upload all sizes to Firebase Storage
+    const urls = await uploadProcessedImages(
+      siteId,
+      media.mid.toString(),
+      media.order,
+      processedImages
+    );
+
+    if (!urls) {
+      throw new Error('Failed to upload processed images');
+    }
+
     return {
       mediaId: media.mid.toString(),
       name: media.name,
@@ -110,14 +130,17 @@ async function processMedia(siteId: string, media: HDPhotoHubMedia): Promise<Pro
       extension: media.extension,
       size: media.size,
       originalUrl: media.url,
-      url: storageUrl,
+      storageUrl: urls.originalUrl,
+      smallUrl: urls.smallUrl,
+      mediumUrl: urls.mediumUrl,
+      largeUrl: urls.largeUrl,
       order: media.order,
       branded: media.branded
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error(`Error processing media ${media.mid}:`, errorMessage);
-    
+
     // Return original media object with original URL if processing fails
     return {
       mediaId: media.mid.toString(),
@@ -127,7 +150,8 @@ async function processMedia(siteId: string, media: HDPhotoHubMedia): Promise<Pro
       highlight: media.highlight,
       extension: media.extension,
       size: media.size,
-      url: media.url,
+      originalUrl: media.url,
+      storageUrl: media.url, // Use original URL as fallback
       order: media.order,
       branded: media.branded,
       processingError: errorMessage
@@ -235,8 +259,8 @@ export async function POST(request: NextRequest) {
         });
       }
       
-      // Save to Firestore sites collection
-      await adminDb.collection('sites').doc(siteId).set({
+      // Save to Firestore sites collection using client SDK (same as other operations)
+      await setDoc(doc(db, 'sites', siteId), {
         siteId: siteId,
         businessId: siteData.bid.toString(),
         status: siteData.status,
@@ -258,7 +282,7 @@ export async function POST(request: NextRequest) {
           }
         },
         reviewed: false,
-        timestamp: admin.firestore.FieldValue.serverTimestamp()
+        timestamp: serverTimestamp()
       });
       
       // Update migration status to completed
