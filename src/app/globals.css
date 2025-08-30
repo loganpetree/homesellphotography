@@ -120,3 +120,84 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom animations for waterfall effect */
+@keyframes scroll-right {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100vw);
+  }
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100vw);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes scroll-right-slow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100vw);
+  }
+}
+
+/* Waterfall scroll animations */
+.animate-scroll-right {
+  animation: scroll-right 75s linear infinite;
+}
+
+.animate-scroll-left {
+  animation: scroll-left 85s linear infinite;
+}
+
+.animate-scroll-right-slow {
+  animation: scroll-right-slow 100s linear infinite;
+}
+
+.animate-scroll-right-fast {
+  animation: scroll-right 60s linear infinite;
+}
+
+.animate-scroll-left-medium {
+  animation: scroll-left 80s linear infinite;
+}
+
+.animate-scroll-left-fast {
+  animation: scroll-left 50s linear infinite;
+}
+
+.animate-scroll-right-medium {
+  animation: scroll-right 70s linear infinite;
+}
+
+.animate-scroll-left-slow {
+  animation: scroll-left 90s linear infinite;
+}
+
+/* Floating animation for scattered images */
+@keyframes float-random {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-1deg);
+  }
+  75% {
+    transform: translateY(-15px) rotate(1deg);
+  }
+}
+
+.animate-float-random {
+  animation: float-random 8s ease-in-out infinite;
+}
