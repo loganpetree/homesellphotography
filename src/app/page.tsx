@@ -67,6 +67,7 @@ export default function Home() {
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [pageLoaded, setPageLoaded] = useState(false);
   const [waterfallImages, setWaterfallImages] = useState<ShowcaseImage[]>([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
 
   const testimonials = [
@@ -391,6 +392,18 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [heroImages.length]);
 
+  // Close mobile menu on window resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) { // md breakpoint
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Discount Banner */}
@@ -412,7 +425,7 @@ export default function Home() {
       )}
       
       {/* Navigation */}
-      <nav className="bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="text-2xl font-bold tracking-wide text-gray-900">
@@ -421,9 +434,9 @@ export default function Home() {
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <Link href="/portfolio" className="text-gray-600 hover:text-gray-900 transition-colors">Portfolio</Link>
-              <Link href="/services" className="text-gray-600 hover:text-gray-900 transition-colors">Services</Link>
-              <Link href="/pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</Link>
+              <a href="#featured-work" className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">Portfolio</a>
+              <a href="#services" className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">Services</a>
+              <a href="https://homesellphotography.hd.pics/order" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">Pricing</a>
               <Button 
                 className="bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded"
                 onClick={() => window.open('https://homesellphotography.hd.pics/order', '_blank')}
@@ -432,12 +445,69 @@ export default function Home() {
               </Button>
             </div>
             
-            <Button variant="ghost" size="icon" className="md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
               <Menu className="h-5 w-5" />
             </Button>
           </div>
         </div>
       </nav>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-b border-gray-100 shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex justify-end mb-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="h-8 w-8"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex flex-col space-y-4">
+              <a
+                href="#featured-work"
+                className="text-gray-600 hover:text-gray-900 transition-colors py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Portfolio
+              </a>
+              <a
+                href="#services"
+                className="text-gray-600 hover:text-gray-900 transition-colors py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Services
+              </a>
+              <a
+                href="https://homesellphotography.hd.pics/order"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-gray-900 transition-colors py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Pricing
+              </a>
+              <Button
+                className="bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded w-full justify-start"
+                onClick={() => {
+                  window.open('https://homesellphotography.hd.pics/order', '_blank');
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                Book a Shoot
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section - Complete Redesign */}
       <section className="relative min-h-[24vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100">
@@ -452,7 +522,7 @@ export default function Home() {
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute inset-0 opacity-8">
             {/* Evenly spaced grid covering the entire background */}
-            <div className="grid grid-cols-12 grid-rows-10 gap-x-2 gap-y-1 h-full w-full p-0">
+            <div className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-12 grid-rows-8 md:grid-rows-10 gap-0 md:gap-1 h-full w-full p-0">
               {Array.from({ length: 120 }, (_, index) => {
                 const imageIndex = index % waterfallImages.length;
                 const image = waterfallImages[imageIndex];
@@ -621,7 +691,7 @@ export default function Home() {
 
 
       {/* Portfolio Grid */}
-      <section className="py-20 px-4 bg-gray-50 relative overflow-hidden">
+      <section id="featured-work" className="py-20 px-4 bg-gray-50 relative overflow-hidden">
         <div className="absolute inset-0" style={{
           backgroundImage: 'radial-gradient(circle, #22C55E 1px, transparent 1px)',
           backgroundSize: '32px 32px',
@@ -633,13 +703,13 @@ export default function Home() {
           opacity: 0.15
         }} />
         <div className="max-w-7xl mx-auto relative">
-          <div className="flex justify-between items-end mb-12">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-12">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Featured <span className="text-[#22C55E]">Work</span></h2>
               <p className="text-gray-600">Showcasing our finest property photography</p>
             </div>
             <Link href="/featured-work">
-              <Button variant="ghost" className="hidden md:flex items-center gap-2 text-gray-700 hover:bg-gray-100">
+              <Button className="bg-[#22C55E] hover:bg-[#4ADE80] text-white items-center gap-2 px-4 py-2 text-sm font-medium w-fit">
                 View All Work <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -650,7 +720,7 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section className="py-20 bg-white">
+      <section id="services" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-gray-900">Our <span className="text-[#22C55E]">Services</span></h2>
           
@@ -659,25 +729,42 @@ export default function Home() {
               {
                 title: "Property Photography",
                 description: "High-quality photos that showcase your property in its best light",
-                price: "Starting at $199"
+                image: "/hero-house-2.jpg"
               },
               {
-                title: "Virtual Tours",
-                description: "Immersive 3D tours that let buyers explore every corner",
-                price: "Starting at $299"
+                title: "Mapping",
+                description: "Detailed property mapping and floor plans for comprehensive property documentation",
+                image: "/floorplan.png"
               },
               {
                 title: "Aerial Photography",
                 description: "Stunning drone shots that capture the full scope of your property",
-                price: "Starting at $249"
+                image: "/drone.jpg"
               }
             ].map((service, i) => (
               <div key={i} className="group p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300">
-                <div className="aspect-video rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 mb-6
-                              group-hover:scale-[1.02] transition-transform duration-300" />
+                <div className="aspect-video rounded-xl overflow-hidden mb-6 group-hover:scale-[1.02] transition-transform duration-300 relative">
+                  {service.image ? (
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={i === 2} // Prioritize loading the drone image
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200" />
+                  )}
+                </div>
                 <h3 className="text-xl font-medium mb-2 text-gray-900">{service.title}</h3>
                 <p className="text-gray-600 mb-4">{service.description}</p>
-                <p className="text-sm font-medium text-[#22C55E]">{service.price}</p>
+                <Button
+                  className="w-full bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded-lg"
+                  onClick={() => window.open('https://homesellphotography.hd.pics/order', '_blank')}
+                >
+                  Book {service.title}
+                </Button>
               </div>
             ))}
           </div>
@@ -719,13 +806,12 @@ export default function Home() {
               >
                 {testimonials.map((testimonial, i) => (
                   <div key={i} className="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
-                    <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 h-full min-h-[320px] flex flex-col">
-                      <div className="mb-6 flex-1">
-                        <div className="absolute text-[#22C55E] text-6xl leading-none">"</div>
-                        <p className="text-gray-600 relative z-10 pt-4 line-clamp-4 leading-relaxed">{testimonial.quote}</p>
+                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 h-full min-h-[200px] flex flex-col">
+                      <div className="mb-2 flex-1">
+                        <p className="text-gray-600 line-clamp-4 leading-relaxed">{testimonial.quote}</p>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <div className="relative h-12 w-12 rounded-full overflow-hidden bg-gradient-to-br from-[#22C55E]/10 to-[#22C55E]/30">
+                      <div className="flex items-center gap-3">
+                        <div className="relative h-10 w-10 rounded-full overflow-hidden bg-gradient-to-br from-[#22C55E]/10 to-[#22C55E]/30">
                           <Image
                             src={testimonial.avatar}
                             alt={`${testimonial.author}'s avatar`}
@@ -734,7 +820,7 @@ export default function Home() {
                           />
                         </div>
                         <div>
-                          <div className="font-medium text-gray-900">{testimonial.author}</div>
+                          <div className="font-medium text-gray-900 text-sm">{testimonial.author}</div>
                           <div className="text-sm text-gray-500">{testimonial.role} at {testimonial.company}</div>
                         </div>
                       </div>
@@ -850,9 +936,9 @@ export default function Home() {
               <h4 className="font-medium mb-4 text-gray-900">Services</h4>
               <div className="space-y-2 text-gray-500">
                 <div className="hover:text-gray-900 transition-colors cursor-pointer">Property Photography</div>
-                <div className="hover:text-gray-900 transition-colors cursor-pointer">Virtual Tours</div>
+                <div className="hover:text-gray-900 transition-colors cursor-pointer">Mapping</div>
                 <div className="hover:text-gray-900 transition-colors cursor-pointer">Aerial Photography</div>
-                <div className="hover:text-gray-900 transition-colors cursor-pointer">Video Tours</div>
+                <div className="hover:text-gray-900 transition-colors cursor-pointer">Floor Plans</div>
               </div>
             </div>
             <div>
