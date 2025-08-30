@@ -24,6 +24,9 @@ interface ShowcaseImage {
   mediaId: string;
   siteId: string;
   url: string;
+  smallUrl?: string;
+  mediumUrl?: string;
+  largeUrl?: string;
   name: string;
   siteName: string;
   location: string;
@@ -332,6 +335,9 @@ export default function Home() {
                 mediaId: media.mediaId,
                 siteId: result.favorite.siteId,
                 url: media.mediumUrl || media.smallUrl || media.storageUrl || media.originalUrl,
+                smallUrl: media.smallUrl,
+                mediumUrl: media.mediumUrl,
+                largeUrl: media.largeUrl,
                 name: media.name || 'Untitled',
                 siteName: locationInfo.address,
                 location: locationInfo.location
@@ -346,6 +352,9 @@ export default function Home() {
                 mediaId: firstMedia.mediaId,
                 siteId: result.favorite.siteId,
                 url: firstMedia.mediumUrl || firstMedia.smallUrl || firstMedia.storageUrl || firstMedia.originalUrl,
+                smallUrl: firstMedia.smallUrl,
+                mediumUrl: firstMedia.mediumUrl,
+                largeUrl: firstMedia.largeUrl,
                 name: firstMedia.name || 'Untitled',
                 siteName: locationInfo.address,
                 location: locationInfo.location
@@ -597,7 +606,7 @@ export default function Home() {
                 ) : heroImages.length > 0 ? (
                   <div className="absolute inset-0">
                     <Image
-                      src={heroImages[currentImageIndex]?.url || '/hero-house.jpg'}
+                      src={heroImages[currentImageIndex]?.largeUrl || heroImages[currentImageIndex]?.url || '/hero-house.jpg'}
                       alt={`Premium real estate photography: ${heroImages[currentImageIndex]?.siteName || 'Luxury Property'}`}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
