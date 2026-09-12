@@ -1,0 +1,28 @@
+name: assemble-package-lock
+on:
+  push:
+    paths:
+      - '_lock_chunks/**'
+      - '.github/workflows/assemble-package-lock.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Assemble package-lock.json
+        run: |
+          set -euo pipefail
+          cat _lock_chunks/*.txt > package-lock.json
+          wc -c package-lock.json
+          python3 -c "import json; json.load(open('package-lock.json')); print('json_ok')"
+          python3 -c "import json; print(json.load(open('package-lock.json'))['packages']['node_modules/next']['version'])"
+      - name: Commit assembled lockfile
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "fix(deploy): upgrade next to 15.5.24 (Vercel vulnerable Next.js block)"
+          file_pattern: package-lock.json
