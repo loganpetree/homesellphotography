@@ -15,7 +15,7 @@ export default function JsonLd() {
         "@id": `${SITE_URL}/#business`,
         name: SITE_NAME,
         url: SITE_URL,
-        image: `${SITE_URL}/hero-house-2.jpg`,
+        image: `${SITE_URL}/drone-service-image-v2.webp`,
         telephone: PHONE_E164,
         email: EMAIL,
         priceRange: "$$",
