@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import CtaBand from "@/components/CtaBand";
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/services/floor-plans" },
 };
 
-export default function FloorPlansPage() {
+export default function Page() {
   return (
     <div className="min-h-screen bg-white">
       <SiteHeader />
@@ -22,8 +21,7 @@ export default function FloorPlansPage() {
               Floor Plans &amp; <span className="text-[#22C55E]">Mapping</span>
             </h1>
             <p className="text-lg text-gray-600 mb-6">
-              Photos sell emotion; floor plans sell clarity. Give buyers a quick read on bedrooms, living flow, and how
-              spaces connect before they schedule a showing.
+              Photos sell emotion; floor plans sell clarity. Give buyers a quick read on bedrooms, living flow, and how spaces connect before they schedule a showing.
             </p>
             <ul className="space-y-3 text-gray-700">
               <li>• Easy-to-read layouts for MLS and listing sites</li>
@@ -32,15 +30,16 @@ export default function FloorPlansPage() {
             </ul>
           </div>
           <div className="relative h-72 md:h-96 rounded-2xl overflow-hidden bg-gray-50">
-            <Image
+            <img
               src="/floorplan.png"
               alt="Example real estate floor plan and property mapping"
-              fill
-              className="object-contain p-4"
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              priority
+              className="absolute inset-0 h-full w-full object-contain p-4"
+              loading="eager"
             />
           </div>
+        </div>
+        <div className="max-w-3xl">
+          <p className="text-gray-600">Add floor plans when the home has a complex layout or when buyers need clarity before booking a tour.</p>
         </div>
         <CtaBand title="Add floor plans to your package" />
       </main>
