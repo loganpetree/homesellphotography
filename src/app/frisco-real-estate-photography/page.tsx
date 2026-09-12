@@ -3,6 +3,7 @@ import Link from "next/link";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import CtaBand from "@/components/CtaBand";
+import BookLink from "@/components/BookLink";
 
 export const metadata: Metadata = {
   title: "Frisco Real Estate Photography",
@@ -19,9 +20,17 @@ export default function Page() {
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
           Frisco Real Estate <span className="text-[#22C55E]">Photography</span>
         </h1>
-        <p className="text-lg text-gray-600 max-w-3xl mb-8">
+        <p className="text-lg text-gray-600 max-w-3xl mb-6">
           Professional Frisco real estate photography for new builds, family homes, and luxury listings. Book Homesell for photos, drone, and floor plans.
         </p>
+        <div className="mb-10">
+          <BookLink
+            location="city_frisco_hero"
+            className="inline-flex items-center justify-center rounded bg-[#22C55E] hover:bg-[#4ADE80] text-white px-6 py-3 font-medium transition-colors"
+          >
+            Book Frisco photography
+          </BookLink>
+        </div>
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           <div className="rounded-2xl border border-gray-100 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-3">Why agents book us in Frisco</h2>
@@ -45,7 +54,7 @@ export default function Page() {
         <div className="prose prose-gray max-w-3xl mb-8">
           <p className="text-gray-600">Frisco and the northern suburbs move fast. Crisp photos and optional aerial coverage help your listing stand out in a competitive feed — especially for master-planned communities and homes with strong curb appeal.</p>
         </div>
-        <CtaBand title="Book Frisco listing photography" />
+        <CtaBand title="Book Frisco listing photography" location="city_frisco_cta" />
       </main>
       <SiteFooter />
     </div>

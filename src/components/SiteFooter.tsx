@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { SITE_NAME } from "@/lib/site";
+import { SITE_NAME, marketLinks, resourceLinks } from "@/lib/site";
 
 export default function SiteFooter() {
   return (
-    <footer className="bg-white border-t border-gray-100 py-12 px-4">
+    <footer className="bg-white border-t border-gray-100 py-12 px-4 mb-16 md:mb-0">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
@@ -26,9 +26,11 @@ export default function SiteFooter() {
           <div>
             <h4 className="font-medium mb-4 text-gray-900">Markets</h4>
             <div className="space-y-2 text-gray-500 text-sm">
-              <Link href="/dallas-real-estate-photography" className="block hover:text-gray-900 transition-colors">Dallas</Link>
-              <Link href="/dfw-real-estate-photography" className="block hover:text-gray-900 transition-colors">DFW Metroplex</Link>
-              <Link href="/frisco-real-estate-photography" className="block hover:text-gray-900 transition-colors">Frisco</Link>
+              {marketLinks.map((m) => (
+                <Link key={m.href} href={m.href} className="block hover:text-gray-900 transition-colors">
+                  {m.label}
+                </Link>
+              ))}
             </div>
           </div>
           <div>
@@ -36,7 +38,13 @@ export default function SiteFooter() {
             <div className="space-y-2 text-gray-500 text-sm">
               <Link href="/about" className="block hover:text-gray-900 transition-colors">About Us</Link>
               <Link href="/featured-work" className="block hover:text-gray-900 transition-colors">Portfolio</Link>
+              <Link href="/testimonials" className="block hover:text-gray-900 transition-colors">Testimonials</Link>
               <Link href="/services" className="block hover:text-gray-900 transition-colors">All Services</Link>
+              {resourceLinks.map((r) => (
+                <Link key={r.href} href={r.href} className="block hover:text-gray-900 transition-colors">
+                  {r.label}
+                </Link>
+              ))}
               <a href="mailto:admin@homesellphotography.com" className="block hover:text-gray-900 transition-colors">Contact</a>
             </div>
           </div>

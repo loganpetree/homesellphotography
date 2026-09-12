@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BOOKING_URL, navLinks } from "@/lib/site";
+import { navLinks } from "@/lib/site";
+import BookLink from "@/components/BookLink";
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -28,23 +29,30 @@ export default function SiteHeader() {
                   {link.label}
                 </Link>
               ))}
-              <Button
-                className="bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded"
-                onClick={() => window.open(BOOKING_URL, "_blank")}
+              <BookLink
+                location="header_desktop"
+                className="inline-flex items-center justify-center bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded px-4 py-2 text-sm font-medium transition-colors shadow-sm"
               >
                 Book a Shoot
-              </Button>
+              </BookLink>
             </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setOpen(!open)}
-              aria-label="Toggle menu"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
+            <div className="flex md:hidden items-center gap-2">
+              <BookLink
+                location="header_mobile"
+                className="inline-flex items-center justify-center bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded px-3 py-2 text-sm font-semibold transition-colors"
+              >
+                Book
+              </BookLink>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setOpen(!open)}
+                aria-label="Toggle menu"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </nav>
@@ -68,15 +76,12 @@ export default function SiteHeader() {
                   {link.label}
                 </Link>
               ))}
-              <Button
-                className="bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded w-full justify-start"
-                onClick={() => {
-                  window.open(BOOKING_URL, "_blank");
-                  setOpen(false);
-                }}
+              <BookLink
+                location="header_mobile_menu"
+                className="inline-flex items-center justify-center bg-[#22C55E] hover:bg-[#4ADE80] text-white rounded w-full py-3 font-medium transition-colors"
               >
                 Book a Shoot
-              </Button>
+              </BookLink>
             </div>
           </div>
         </div>

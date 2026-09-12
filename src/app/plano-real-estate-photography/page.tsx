@@ -6,9 +6,9 @@ import CtaBand from "@/components/CtaBand";
 import BookLink from "@/components/BookLink";
 
 export const metadata: Metadata = {
-  title: "DFW Real Estate Photography",
-  description: "DFW real estate photography for listing agents across the Dallas–Fort Worth metroplex — photos, aerial media, and floor plans with easy online booking.",
-  alternates: { canonical: "/dfw-real-estate-photography" },
+  title: "Plano Real Estate Photography",
+  description: "Professional Plano real estate photography for Legacy, West Plano, and corporate-relocation listings. Book Homesell for photos, drone, and floor plans.",
+  alternates: { canonical: "/plano-real-estate-photography" },
 };
 
 export default function Page() {
@@ -18,22 +18,22 @@ export default function Page() {
       <main className="max-w-7xl mx-auto px-4 py-12">
         <p className="text-sm font-medium text-[#22C55E] mb-3">Homesell Photography</p>
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          DFW Real Estate <span className="text-[#22C55E]">Photography</span>
+          Plano Real Estate <span className="text-[#22C55E]">Photography</span>
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mb-6">
-          DFW real estate photography for listing agents across the Dallas–Fort Worth metroplex — photos, aerial media, and floor plans with easy online booking.
+          Professional Plano real estate photography for Legacy, West Plano, and corporate-relocation listings. Book Homesell for photos, drone, and floor plans.
         </p>
         <div className="mb-10">
           <BookLink
-            location="city_dfw_hero"
+            location="city_plano_hero"
             className="inline-flex items-center justify-center rounded bg-[#22C55E] hover:bg-[#4ADE80] text-white px-6 py-3 font-medium transition-colors"
           >
-            Book DFW photography
+            Book Plano photography
           </BookLink>
         </div>
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           <div className="rounded-2xl border border-gray-100 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">Why agents book us in DFW</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">Why agents book us in Plano</h2>
             <ul className="space-y-2 text-gray-600">
               <li>• Reliable on-time photographers</li>
               <li>• Listing-ready edits with fast turnaround</li>
@@ -52,9 +52,15 @@ export default function Page() {
           </div>
         </div>
         <div className="prose prose-gray max-w-3xl mb-8">
-          <p className="text-gray-600">Serving the broader DFW metroplex means you get one reliable media partner whether your listing is in Dallas, Fort Worth, the mid-cities, or nearby suburbs. Ask about travel for outlying communities when you book.</p>
+          <p className="text-gray-600">Plano buyers compare listings side-by-side on the MLS and Zillow. Crisp interiors, strong curb appeal, and optional aerial shots help your listing hold attention — especially around Legacy West, Willow Bend, and established neighborhoods with mature trees.</p>
+          <p className="text-gray-600 mt-4">
+            Serving nearby markets too — see{" "}
+            <Link href="/dfw-real-estate-photography" className="text-[#22C55E] hover:underline">DFW coverage</Link>,{" "}
+            <Link href="/resources/shoot-prep" className="text-[#22C55E] hover:underline">shoot prep tips</Link>, or{" "}
+            <Link href="/testimonials" className="text-[#22C55E] hover:underline">agent testimonials</Link>.
+          </p>
         </div>
-        <CtaBand title="Book DFW listing photography" location="city_dfw_cta" />
+        <CtaBand title="Book Plano listing photography" location="city_plano_cta" />
       </main>
       <SiteFooter />
     </div>

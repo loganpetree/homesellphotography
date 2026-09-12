@@ -3,6 +3,7 @@ import Link from "next/link";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import CtaBand from "@/components/CtaBand";
+import BookLink from "@/components/BookLink";
 
 export const metadata: Metadata = {
   title: "Real Estate Photography Services",
@@ -40,10 +41,18 @@ export default function ServicesPage() {
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
           Real Estate Photography <span className="text-[#22C55E]">Services</span>
         </h1>
-        <p className="text-lg text-gray-600 max-w-3xl mb-12">
+        <p className="text-lg text-gray-600 max-w-3xl mb-6">
           Homesell Photography helps Dallas-Fort Worth agents book professional media that gets listings noticed —
           still photos, drone coverage, and floor plans with reliable turnaround.
         </p>
+        <div className="mb-12">
+          <BookLink
+            location="services_hero"
+            className="inline-flex items-center justify-center rounded bg-[#22C55E] hover:bg-[#4ADE80] text-white px-6 py-3 font-semibold transition-colors"
+          >
+            Book a Shoot
+          </BookLink>
+        </div>
 
         <div className="grid md:grid-cols-3 gap-8">
           {services.map((service) => (
@@ -53,7 +62,6 @@ export default function ServicesPage() {
               className="group rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow"
             >
               <div className="relative h-48 bg-gray-100 overflow-hidden">
-                {/* Native img avoids build-time sharp processing of multi-MB assets */}
                 <img
                   src={service.image}
                   alt={service.title}
@@ -71,7 +79,7 @@ export default function ServicesPage() {
           ))}
         </div>
 
-        <CtaBand />
+        <CtaBand location="services_cta" />
       </main>
       <SiteFooter />
     </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import CtaBand from "@/components/CtaBand";
+import BookLink from "@/components/BookLink";
 
 export const metadata: Metadata = {
   title: "Property Photography for Real Estate Listings",
@@ -23,12 +24,18 @@ export default function Page() {
             <p className="text-lg text-gray-600 mb-6">
               First impressions sell homes. Our listing photography highlights natural light, space, and finish details so buyers stay longer on your MLS and social posts.
             </p>
-            <ul className="space-y-3 text-gray-700">
+            <ul className="space-y-3 text-gray-700 mb-6">
               <li>• Interior and exterior stills tuned for MLS and portals</li>
               <li>• Consistent angles and verticals that feel premium</li>
               <li>• Fast turnaround so you can go live on schedule</li>
               <li>• Easy online booking for occupied or vacant homes</li>
             </ul>
+            <BookLink
+              location="service_property_hero"
+              className="inline-flex items-center justify-center rounded bg-[#22C55E] hover:bg-[#4ADE80] text-white px-6 py-3 font-medium transition-colors"
+            >
+              Book property photography
+            </BookLink>
           </div>
           <div className="relative h-72 md:h-96 rounded-2xl overflow-hidden bg-gray-50">
             <img
@@ -42,7 +49,7 @@ export default function Page() {
         <div className="max-w-3xl">
           <p className="text-gray-600">Whether you are launching a starter home in the suburbs or a luxury listing in Dallas, we shoot for how buyers actually browse — bright, accurate, and mobile-friendly.</p>
         </div>
-        <CtaBand title="Book property photography" />
+        <CtaBand title="Book property photography" location="service_property_cta" />
       </main>
       <SiteFooter />
     </div>
